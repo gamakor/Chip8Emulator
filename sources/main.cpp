@@ -1,9 +1,13 @@
+
 #include "raylib.h"
+#include "chip8.h"
 
 #define SCREEN_WIDTH (800)
 #define SCREEN_HEIGHT (450)
 
 #define WINDOW_TITLE "Window title"
+
+
 
 int main(void)
 {
