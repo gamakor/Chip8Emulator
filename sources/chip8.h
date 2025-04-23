@@ -8,6 +8,7 @@
 
 
 class chip8 {
+public:
     unsigned short opcode;
     unsigned char memory[4096];
     unsigned char V[16];
@@ -25,6 +26,7 @@ class chip8 {
     unsigned char key[16];
 
 void Initialize();
+    void EmulateCycle();
 
 };
 

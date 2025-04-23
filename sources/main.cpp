@@ -7,7 +7,7 @@
 
 #define WINDOW_TITLE "Window title"
 
-
+chip8 myChip8;
 
 int main(void)
 {
@@ -16,8 +16,27 @@ int main(void)
 
     Texture2D texture = LoadTexture(ASSETS_PATH"test.png"); // Check README.md for how this works
 
+    //SetupGraphics();
+    //SetupInput();
+
+    //myChip8.Initialize();
+    //myChip8.LoadGame();
+
+
     while (!WindowShouldClose())
     {
+        //impulate one cycle
+        //mychip8.emulateCycle();
+
+
+        //if draw flag update screen
+        //if(myChip8.DrawFlag();
+        //drawGraphics();
+
+        //MyChip8.setKeys();
+
+
+
         BeginDrawing();
 
         ClearBackground(RAYWHITE);
