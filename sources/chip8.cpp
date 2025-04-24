@@ -51,20 +51,28 @@ void chip8::EmulateCycle() {
     switch (opcode & 0xF000) {
 
         case 0x1000:
+            pc = opcode & 0x0FFF;
+            break;
         break;
         case 0x2000:
             break;
         case 0x3000://skip next opcode if vX == NN
             if (V[opcode & 0x0f00]== opcode & 0x0ff)
-                //Skip 2 byte
+                pc+=4;
+            else
+                pc+=2;
             break;
         case 0x4000://skip next opcode if vX != NN
             if (V[opcode & 0x0f00]!= opcode & 0x0ff)
-                //skip 2 bytes
+                pc += 4;
+            else
+                pc += 2;
                     break;
         case 0x5000://skip next opcode if vX == vY
             if (V[opcode & 0x0f00] == V[opcode & 0x00f0])
-                //skip 2 bytes
+                pc += 4;
+            else
+                pc += 2;
                     break;
 
         case 0x6000://set vX to NN
@@ -81,19 +89,19 @@ void chip8::EmulateCycle() {
                     V[opcode & 0x0f00]= V[opcode & 0x00f0];
                     pc+=2;
                     break;
-            case 0x0001:
+            case 0x0001://Set vsx to vx or vy(bitwise or operator
                     V[opcode & 0x0f00]=  V[opcode & 0x0f00] |V[opcode & 0x00f0];
                     pc+=2;
                     break;
-            case 0x0002:
+            case 0x0002:    //Sets VX to VX and VY (bitwise and
                     V[opcode & 0x0f00] &= V[opcode & 0x00f0];
                     pc+=2;
                     break;
-            case 0x0003:
+            case 0x0003:    //Sets VX to VX xor Vy
                     V[opcode & 0x0f00]^= V[opcode & 0x00f0];
                     pc+=2;
                     break;
-            case 0x0004:
+            case 0x0004:    //Adds VY to VX VF is set to 1 when theres's an overflow ,0 when not
                     V[opcode & 0x0f00]+= V[opcode & 0x00f0];
                     // set vf to true if there is over flow and to 0 if there isnt
                     //TOdo how to test for over flow with out over flowing?
@@ -106,7 +114,7 @@ void chip8::EmulateCycle() {
                     V[opcode & 0x0f00]-= V[opcode & 0x00f0];
                     pc += 2;
                     break;
-            case 0x0006:
+            case 0x0006:    //Shifst VX to the right by 1
                     //right shift bit op need to research
                     break;
             case 0x0007:
@@ -121,11 +129,11 @@ void chip8::EmulateCycle() {
 
 
             }
-        case 0x9000:
+        case 0x9000: //Skip next opcode if vX != vy
             if (V[opcode & 0x0f00]==V[opcode & 0x00f0])
-                //figure out how skipping codeblock would need to work
-
-
+                pc+= 4;
+            else
+                pc+= 2;
         case 0xA000: // ANNN: Sets I to the address NNN
             I = opcode & 0x0FFF;
             pc += 2;
