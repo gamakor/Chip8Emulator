@@ -19,14 +19,14 @@ int main(void)
     //SetupGraphics();
     //SetupInput();
 
-    //myChip8.Initialize();
-    //myChip8.LoadGame();
+    myChip8.Initialize();
+    myChip8.LoadGame();
 
 
     while (!WindowShouldClose())
     {
         //impulate one cycle
-        //mychip8.emulateCycle();
+        myChip8.EmulateCycle();
 
 
         //if draw flag update screen
