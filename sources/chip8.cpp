@@ -54,7 +54,7 @@ void chip8::EmulateCycle() {
     switch (opcode & 0xF000) {
         case 0x0000:
             switch (opcode & 0x000F) {
-                case 0x0000: // clears the screen todo
+                case 0x0000: // clears the screen
                     //Clear the arrary for gfx
                     for (auto element: gfx) {
                         gfx[element] = 0;
@@ -62,9 +62,8 @@ void chip8::EmulateCycle() {
                     drawFlag = true;
                     printf("Clear screen\n");
                     pc +=2;
-                    //set draw flag
                     break;
-                case 0x000E: // returns from a subroutines todo
+                case 0x000E: // returns from a subroutines
                     pc = stack[sp];
                     sp--;
                     break;
@@ -82,59 +81,59 @@ void chip8::EmulateCycle() {
             pc = opcode & 0x0FFF;
             break;
         case 0x3000://skip next opcode if vX == NN
-            if (V[opcode & 0x0f00]== opcode & 0x0ff)
+            if (V[opcode & 0x0f00>>8]== opcode & 0x0ff)
                 pc+=4;
             else
                 pc+=2;
             break;
         case 0x4000://skip next opcode if vX != NN
-            if (V[opcode & 0x0f00]!= opcode & 0x0ff)
+            if (V[opcode & 0x0f00 >>8]!= opcode & 0x0ff)
                 pc += 4;
             else
                 pc += 2;
                     break;
         case 0x5000://skip next opcode if vX == vY
-            if (V[opcode & 0x0f00] == V[opcode & 0x00f0])
+            if (V[opcode & 0x0f00 >>8] == V[opcode & 0x00f0])
                 pc += 4;
             else
                 pc += 2;
                     break;
 
         case 0x6000://set vX to NN
-            V[opcode & 0x0f00] = opcode &0x00ff;
+            V[(opcode & 0x0f00)>> 8] = opcode &0x00ff;
             pc+=2;
             printf("Set vx to NN""\n");
             break;
         case 0x7000: // add nn to VX
-            V[opcode & 0x0f00] += opcode & 0x00ff;
+            V[(opcode & 0x0f00)>>8] += opcode & 0x00ff;
             pc +=2;
             printf("Add nn to VX \n");
             break;
         case 0x8000:
             switch (opcode & 0x000f) {
                 case 0x0000://set vX to NN
-                    V[opcode & 0x0f00]= V[opcode & 0x00f0];
+                    V[(opcode & 0x0f00) >> 8]= V[opcode & 0x00f0 >> 4];
                     pc+=2;
                     break;
             case 0x0001://Set vsx to vx or vy(bitwise or operator
-                    V[opcode & 0x0f00]=  V[opcode & 0x0f00] |V[opcode & 0x00f0];
+                    V[(opcode & 0x0f00) >> 8]=  V[(opcode & 0x0f00) >> 8] |V[(opcode & 0x00f0) >> 4];
                     pc+=2;
                     break;
             case 0x0002:    //Sets VX to VX and VY (bitwise and
-                    V[opcode & 0x0f00] &= V[opcode & 0x00f0];
+                    V[(opcode & 0x0f00) >> 8] &= V[(opcode & 0x00f0) >> 4];
                     pc+=2;
                     break;
             case 0x0003:    //Sets VX to VX xor Vy
-                    V[opcode & 0x0f00]^= V[opcode & 0x00f0];
+                    V[(opcode & 0x0f00) >>8]^= V[(opcode & 0x00f0) >>4];
                     pc+=2;
                     break;
             case 0x0004:    //Adds VY to VX VF is set to 1 when theres's an overflow ,0 when not
-                    if (V[(opcode & 0x00F0)>> 4] > (0xFF - V[opcode & 0x0F00]>> 8) )
+                    if (V[(opcode & 0x00F0)>> 4] > (0xFF - V[(opcode & 0x0F00) >>8] ) )
                         V[0xF] = 1;
                     else
                         V[0xF] = 0;
 
-                    V[opcode & 0x0f00 >> 8]+= V[opcode & 0x00f0 >> 4];
+                    V[(opcode & 0x0f00) >> 8]+= V[(opcode & 0x00f0) >> 4];
                     pc+=2;
                     break;
             case 0x0005: // subtract VY from VX set flag to 0  for underflow
@@ -145,13 +144,13 @@ void chip8::EmulateCycle() {
                     else
                         V[0xF] = 1;
 
-                    V[opcode & 0x0f00]-= V[opcode & 0x00f0];
+                    V[(opcode & 0x0f00) >> 8]-= V[(opcode & 0x00f0) >>4];
                     pc += 2;
                     break;
             case 0x0006:    //Shifst VX to the right by 1
                     //right shift bit op need to research
                     V[0xF] = opcode & 0x000f;
-                    V[opcode & 0x0f00] =  V[opcode & 0x0f00]>>1;
+                    V[(opcode & 0x0f00) >> 8] =  V[(opcode & 0x0f00) >>8]>>1;
                     break;
             case 0x0007:
                     //set vf flag 0 for underflow
@@ -205,11 +204,11 @@ void chip8::EmulateCycle() {
             for (int yline = 0 ; yline < height ; yline++) {
                 pixel = memory[I+yline];
                 for (int xline = 0; xline < 8; xline++) {
-                    if ((pixel &(0x80 >> xline))!= 0){
-                        V[0xF] = 1;
-                    }
-                    if (gfx[(x+xline+ (y + yline)* 64)] == 1) {
-                        gfx[x + xline + (y+yline) * 64] ^= 1;
+                    if ((pixel &(0x80 >> xline))!= 0) {
+                        if (gfx[(x+xline+ ((y + yline)* 64))] == 1) {
+                            V[0xF] = 1;
+                        }
+                        gfx[x + xline + ((y+yline) * 64)] ^= 1;
                     }
 
                 }
@@ -244,19 +243,19 @@ void chip8::EmulateCycle() {
         case 0xF000:
             switch (opcode & 0x00FF) {
                 case 0x0007: // sets VX to the value of the delay timer
-                    V[opcode & 0x0F00] = delay_timer;
+                    V[opcode & 0x0F00 >> 8 ] = delay_timer;
                     pc += 2;
                     break;
                 case 0x000A: // A key press is awaited, and then stored in VX
                     for (unsigned char key1: key) {
                         if (key1 == 1) {
-                            V[opcode & 0x0F00] = key[key1];
+                            V[opcode & 0x0F00 >>8] = key[key1];
                             pc += 2;
                         }
                     }
                     break;
                 case 0x0015: // sets the delay timer to vx
-                    delay_timer = V[opcode & 0x0F00];
+                    delay_timer = V[opcode & 0x0F00 >> 8 ];
                     pc += 2;
                     break;
                 case 0x0018:// set the sound timer to VX
@@ -312,7 +311,7 @@ void chip8::EmulateCycle() {
 
 void chip8::LoadGame() {
     // fopen()
-    FILE* f = fopen(ASSETS_PATH"2-ibm-logo.ch8", "rb");
+    FILE* f = fopen(ASSETS_PATH"test_opcode.ch8", "rb");
 
     if (f == nullptr) {
         printf("Error opening file\n");
