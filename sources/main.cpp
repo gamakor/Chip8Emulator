@@ -11,31 +11,32 @@
 
 chip8 myChip8;
 
+
+
 void DrawGraphics() {
     myChip8.drawFlag =false;
-    ClearBackground(BLACK);
-    BeginDrawing();
 
-   int pixelOn = 0;
 
+   // myChip8.SetKeys();
     for (int y = 0; y < 32; y++) {
         for (int x = 0; x < 64; x++) {
             if (myChip8.gfx[x + (64 * y)]) {
                 DrawRectangle(x * 10, y * 10, 10, 10, WHITE);
-                pixelOn++;
+
             }
         }
-
     }
-    EndDrawing();
-   printf("%i",pixelOn);
+
 }
+
+
 
 
 int main(void)
 {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_TITLE);
-    SetTargetFPS(60);
+    InitAudioDevice();
+    SetTargetFPS(120);
 
     Texture2D texture = LoadTexture(ASSETS_PATH"test.png"); // Check README.md for how this works
 
@@ -44,20 +45,21 @@ int main(void)
 
     myChip8.Initialize();
     myChip8.LoadGame();
-    int cycles = 0;
 
     while (!WindowShouldClose())
     {
+        myChip8.SetKeys();
+        ClearBackground(BLACK);
+        BeginDrawing();
 
-            //impulate one cycle
-            myChip8.EmulateCycle();
+        //impulate one cycle
+        myChip8.EmulateCycle();
             //if draw flag update screen
-            if(myChip8.drawFlag) {
-                DrawGraphics();
-            }
-            cycles++;
 
-        //MyChip8.setKeys();
+        DrawGraphics();
+
+
+        EndDrawing();
     }
 
     CloseWindow();

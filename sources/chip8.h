@@ -46,10 +46,14 @@ public:
         0xF0, 0x80, 0xF0, 0x80, 0x80  // F
       };
 
+    bool waitingForKey = false;
+    char waitingRegister = 0;
+
 
 void Initialize();
     void EmulateCycle();
     void LoadGame();
+    void SetKeys();
 
 };
 
