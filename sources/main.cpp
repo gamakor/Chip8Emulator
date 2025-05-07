@@ -57,8 +57,6 @@ int main(void)
             //if draw flag update screen
 
         DrawGraphics();
-
-
         EndDrawing();
     }
 
