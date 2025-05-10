@@ -3,6 +3,9 @@
 //
 
 #include "chip8.h"
+
+#include <chrono>
+
 #include "raylib.h"
 #include <cstdint>
 #include <cstdio>
@@ -11,9 +14,12 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <thread>
+#include <iostream>
 #include <linux/input-event-codes.h>
 
-
+using Clock = std::chrono::high_resolution_clock;
+auto lastTimerUpdate = Clock::now();
 
 
 void chip8::Initialize() {
@@ -37,7 +43,7 @@ void chip8::Initialize() {
         memory[i] = 0;
     }
 
-
+    BeepSound = LoadSound(ASSETS_PATH"beep.wav");
 
     delay_timer = 0;
     sound_timer = 0;
@@ -336,20 +342,14 @@ void chip8::EmulateCycle() {
             break;
     }
 
-    if (delay_timer >0) {
-        --delay_timer;
-    }
-    if (sound_timer >0) {
-        printf("Beep!\n");
-        --sound_timer;
-    }
+
 
 
 }
 
 void chip8::LoadGame() {
     // fopen()
-    FILE* f = fopen(ASSETS_PATH"glitchGhost.ch8", "rb");
+    FILE* f = fopen(ASSETS_PATH"7-beep.ch8", "rb");
 
     if (f == nullptr) {
         printf("Error opening file\n");
@@ -546,3 +546,23 @@ void chip8::SetKeys() {
         key[0xF] = 0;
     }
 }
+
+void chip8::UpdateTimers() {
+    auto now = Clock::now();
+    auto elapsed = std::chrono::duration<float>(now - lastTimerUpdate).count();
+
+    if (elapsed >= (1.0f / 60.0f)) {
+        if (delay_timer > 0)
+                --delay_timer;
+        if (sound_timer > 0) {
+            --sound_timer;
+            PlaySound(BeepSound);
+        } else {
+           StopSound(BeepSound);
+        }
+        lastTimerUpdate = now;
+    }
+}
+
+
+

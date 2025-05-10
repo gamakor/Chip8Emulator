@@ -1,5 +1,6 @@
 
 #include <cstdio>
+#include <thread>
 
 #include "raylib.h"
 #include "chip8.h"
@@ -7,7 +8,7 @@
 #define SCREEN_WIDTH (640)
 #define SCREEN_HEIGHT (320)
 
-#define WINDOW_TITLE "Window title"
+#define WINDOW_TITLE "CHIP 8 EMU"
 
 chip8 myChip8;
 
@@ -36,7 +37,7 @@ int main(void)
 {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_TITLE);
     InitAudioDevice();
-    SetTargetFPS(120);
+    //SetTargetFPS(360);
 
     Texture2D texture = LoadTexture(ASSETS_PATH"test.png"); // Check README.md for how this works
 
@@ -55,9 +56,12 @@ int main(void)
         //impulate one cycle
         myChip8.EmulateCycle();
             //if draw flag update screen
+        myChip8.UpdateTimers();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
         DrawGraphics();
         EndDrawing();
+
     }
 
     CloseWindow();

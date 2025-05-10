@@ -4,7 +4,9 @@
 
 #ifndef CHIP8_H
 #define CHIP8_H
+#include <cstdint>
 
+#include "raylib.h"
 
 
 class chip8 {
@@ -50,10 +52,20 @@ public:
     char waitingRegister = 0;
 
 
+    Sound BeepSound;
+
+
+
+
+
+
+
 void Initialize();
     void EmulateCycle();
     void LoadGame();
     void SetKeys();
+    void UpdateTimers();
+
 
 };
 
